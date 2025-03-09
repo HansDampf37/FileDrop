@@ -1,0 +1,11 @@
+BEGIN:VCARD
+VERSION:3.0
+FN:Milen Petrov
+N:;Milen Petrov;;;
+EMAIL;TYPE=INTERNET:milenp@fmi.uni-sofia.bg
+TEL;TYPE=CELL:0878 987 654
+ADR;TYPE=HOME:;;Sofia, James Baucher 5
+ADR;TYPE=WORK:;;Sofia, Mladost 1A
+PHOTO;VALUE=URI:https://0.academia-photos.com/2026693/668180/829410/s200_milen.petrov.jpg
+END:VCARD
+
