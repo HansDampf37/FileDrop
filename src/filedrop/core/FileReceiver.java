@@ -8,7 +8,7 @@ import java.net.Socket;
  * The FileReceiver class listens on a given port for incoming file transfer requests,
  * receives metadata and file content, and stores the received file locally.
  */
-public class FileReceiver {
+public class FileReceiver implements Runnable {
 
     private final int port;
 
@@ -23,7 +23,8 @@ public class FileReceiver {
     /**
      * Starts the receiver, waits for a connection, and processes the file transfer.
      */
-    public void start() {
+    @Override
+    public void run() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Receiver listening on port " + port + "...");
             Socket socket = serverSocket.accept();
