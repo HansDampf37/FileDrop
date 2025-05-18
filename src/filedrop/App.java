@@ -1,44 +1,98 @@
 package filedrop;
 
+import filedrop.core.Peer;
+import filedrop.discovery.DiscoveryBroadcaster;
+import filedrop.discovery.DiscoveryListener;
 import filedrop.core.FileReceiver;
 import filedrop.core.FileSender;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 /**
- * Entry point for the file transfer application.
- * Allows user to choose between sender and receiver mode.
+ * Main entry point for the peer-to-peer file transfer app.
  */
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        int fileTransferPort = 5000; // Use same port on all peers
+        String peerName = "Peer-" + new Random().nextInt(1000);
+        String localIp = InetAddress.getLocalHost().getHostAddress();
+        Peer localPeer = new Peer(peerName, localIp, fileTransferPort);
+
+        System.out.println("Starting " + localPeer);
+
+        // Start receiver in background
+        Thread receiverThread = new Thread(new FileReceiver(fileTransferPort));
+        receiverThread.setDaemon(true);
+        receiverThread.start();
+
+        // Start discovery listener in background
+        Thread discoveryListenerThread = new Thread(new DiscoveryListener(localPeer));
+        discoveryListenerThread.setDaemon(true);
+        discoveryListenerThread.start();
+
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Choose mode: [1] Receive  [2] Send");
-        String choice = scanner.nextLine();
+        while (true) {
+            System.out.println("\n=== Menu ===");
+            System.out.println("[1] Send a file (enter IP manually)");
+            System.out.println("[2] Discover peers and send");
+            System.out.println("[3] Exit");
+            System.out.print("Choose option: ");
+            String choice = scanner.nextLine();
 
-        if ("1".equals(choice)) {
-            FileReceiver receiver = new FileReceiver(5000);
-            receiver.start();
+            switch (choice) {
+                case "1":
+                    System.out.print("Enter recipient IP: ");
+                    String ip = scanner.nextLine();
+                    System.out.print("Enter file path: ");
+                    String path = scanner.nextLine();
 
-        } else if ("2".equals(choice)) {
-            System.out.print("Enter path to file: ");
-            String path = scanner.nextLine();
-            File file = new File(path);
+                    File file = new File(path);
+                    if (file.exists()) {
+                        new FileSender(ip, fileTransferPort, file).send();
+                    } else {
+                        System.out.println("File does not exist.");
+                    }
+                    break;
 
-            if (!file.exists()) {
-                System.out.println("File does not exist!");
-                return;
+                case "2":
+                    DiscoveryBroadcaster broadcaster = new DiscoveryBroadcaster();
+                    List<Peer> peers = broadcaster.discoverPeers();
+
+                    if (peers.isEmpty()) {
+                        System.out.println("No peers found.");
+                        break;
+                    }
+
+                    System.out.println("Discovered peers:");
+                    for (int i = 0; i < peers.size(); i++) {
+                        System.out.println("[" + i + "] " + peers.get(i));
+                    }
+
+                    System.out.print("Select peer index: ");
+                    int index = Integer.parseInt(scanner.nextLine());
+                    Peer selectedPeer = peers.get(index);
+
+                    System.out.print("Enter file path: ");
+                    File fileToSend = new File(scanner.nextLine());
+                    if (fileToSend.exists()) {
+                        new FileSender(selectedPeer.ip(), selectedPeer.fileTransferPort(), fileToSend).send();
+                    } else {
+                        System.out.println("File does not exist.");
+                    }
+                    break;
+
+                case "3":
+                    System.out.println("Goodbye.");
+                    return;
+
+                default:
+                    System.out.println("Invalid option.");
             }
-
-            // Send to localhost
-            FileSender sender = new FileSender("127.0.0.1", 5000, file);
-            sender.send();
-
-        } else {
-            System.out.println("Invalid choice.");
         }
-
-        scanner.close();
     }
 }
