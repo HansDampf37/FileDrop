@@ -61,7 +61,7 @@ public class App {
 
                 case "2":
                     DiscoveryBroadcaster broadcaster = new DiscoveryBroadcaster();
-                    List<Peer> peers = broadcaster.discoverPeers();
+                    List<Peer> peers = broadcaster.discoverPeers(localPeer);
 
                     if (peers.isEmpty()) {
                         System.out.println("No peers found.");

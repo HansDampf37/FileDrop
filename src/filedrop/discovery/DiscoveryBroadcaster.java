@@ -16,9 +16,10 @@ public class DiscoveryBroadcaster {
 
     /**
      * Sends a UDP broadcast request and waits for responses.
+     * @param localPeer this apps peer so prevent the discovery process from discovering itself.
      * @return List of discovered peers with IP and port
      */
-    public List<Peer> discoverPeers() {
+    public List<Peer> discoverPeers(Peer localPeer) {
         List<Peer> peers = new ArrayList<>();
 
         try (DatagramSocket socket = new DatagramSocket()) {
@@ -44,7 +45,7 @@ public class DiscoveryBroadcaster {
                     String message = new String(response.getData(), 0, response.getLength());
                     if (message.startsWith("RESPONSE|")) {
                         Peer peer = Peer.fromDiscoveryResponse(message);
-                        if (peer != null) {
+                        if (peer != null && !isSelf(peer, localPeer)) {
                             peers.add(peer);
                         }
                     }
@@ -56,5 +57,10 @@ public class DiscoveryBroadcaster {
         }
 
         return peers;
+    }
+
+    private boolean isSelf(Peer discovered, Peer local) {
+        return discovered.ip().equals(local.ip())
+                && discovered.fileTransferPort() == local.fileTransferPort();
     }
 }
