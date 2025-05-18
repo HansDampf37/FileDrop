@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'org.deg'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    mainClass = 'App'
+}
+
+dependencies {
+    implementation "org.openjfx:javafx-controls:21"
+    implementation "org.openjfx:javafx-base:21"
+    implementation "org.openjfx:javafx-graphics:21"
+}
