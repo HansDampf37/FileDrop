@@ -9,9 +9,9 @@ import java.net.Socket;
  */
 public class FileSender {
 
-    private String peerIp;
-    private int port;
-    private File file;
+    private final String peerIp;
+    private final int port;
+    private final File file;
 
     /**
      * Constructs a FileSender for a specific file and target peer.
