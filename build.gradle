@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
     id 'application'
 }
 
@@ -16,12 +17,17 @@ java {
     }
 }
 
+javafx {
+    version = '21'
+    modules = [ 'javafx.controls' ]
+}
+
 application {
-    mainClass = 'App'
+    mainClass = 'ui.FileShareApp'
 }
 
 dependencies {
     implementation "org.openjfx:javafx-controls:21"
     implementation "org.openjfx:javafx-base:21"
-    implementation "org.openjfx:javafx-graphics:21"
+    implementation 'org.openjfx:javafx-graphics:21.0.2'
 }

@@ -1,7 +1,9 @@
 package homework.task4;
 
-import java.net.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
 
 public class ImageDownloader {
 

@@ -2,9 +2,13 @@ package discovery;
 
 import core.Peer;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Sends a UDP broadcast message on the local network to discover peers.
@@ -23,7 +27,7 @@ public class DiscoveryBroadcaster {
         List<Peer> peers = new ArrayList<>();
 
         try (DatagramSocket socket = new DatagramSocket()) {
-            socket.setSoTimeout(2000); // 2 seconds timeout
+            socket.setSoTimeout(1000); // 1 second timeout
             socket.setBroadcast(true);
 
             byte[] requestData = DISCOVERY_REQUEST.getBytes();
@@ -60,7 +64,7 @@ public class DiscoveryBroadcaster {
     }
 
     private boolean isSelf(Peer discovered, Peer local) {
-        return discovered.ip().equals(local.ip())
+        return false && discovered.ip().equals(local.ip())
                 && discovered.fileTransferPort() == local.fileTransferPort();
     }
 }

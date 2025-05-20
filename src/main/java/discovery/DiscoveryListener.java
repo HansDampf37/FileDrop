@@ -2,8 +2,10 @@ package discovery;
 
 import core.Peer;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 /**
  * Listens for UDP broadcast discovery requests and responds with peer info.
@@ -31,7 +33,6 @@ public class DiscoveryListener implements Runnable {
 
                 String message = new String(packet.getData(), 0, packet.getLength());
                 if ("DISCOVER_REQUEST".equals(message)) {
-                    String ip = InetAddress.getLocalHost().getHostAddress();
                     String response = peer.toDiscoveryResponse();
 
                     byte[] responseData = response.getBytes();
